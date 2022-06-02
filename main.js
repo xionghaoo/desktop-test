@@ -14,23 +14,6 @@ ipc.on('show-open-dialog', function () {
     dialog.showOpenDialog({properties: ['openFile', 'openDirectory', 'multiSelections']})
 })
 
-// const createWindow = () => {
-//     const win = new BrowserWindow({
-//         width: 800,
-//         height: 600,
-//         x: 0,
-//         y: 0,
-//         webPreferences: {
-//             nodeIntegration: true,
-//             contextIsolation: false,
-//             preload: path.join(__dirname, 'preload0.js')
-//         }
-//     })
-//     // 窗口全屏
-//     win.setFullScreen(true)
-//     win.loadFile('./dist/index.html')
-// }
-
 const createMultiWindow = () => {
     let displays = screen.getAllDisplays()
     displays.find((display) => {
@@ -44,6 +27,8 @@ const createMultiWindow = () => {
             height: 600,
             x: display.bounds.x,
             y: display.bounds.y,
+            frame: false,
+            titleBarStyle: 'hidden',
             webPreferences: {
                 nodeIntegration: true,
                 contextIsolation: false,
