@@ -21,6 +21,12 @@ export default {
   props: {
     msg: String
   },
+  mounted() {
+    const ipc = this.window.require('electron').ipcRenderer
+    ipc.on('onContentChange', (e, contentId) => {
+      console.log("this is page A onContentChange: " + contentId);
+    })
+  },
   methods: {
     showDialog: function () {
       const ipc = window.require('electron').ipcRenderer

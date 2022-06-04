@@ -7,9 +7,8 @@
     <div v-else>
       <h1 style="align-items: center; justify-content: center">Hellooo</h1>
     </div>
-    <video id="video" class="camera" autoplay>
-
-    </video>
+    <video id="video" class="camera" autoplay></video>
+    <canvas id="canvas" class="canvas"></canvas>
   </div>
 </template>
 
@@ -24,7 +23,11 @@ export default {
   data() {
     return {
       window: window,
-      thisVideo: null
+      camera: null,
+      wsClient: null,
+      streaming: false,
+      width: 320,
+      height: 0
     }
   },
   components: {
@@ -35,26 +38,15 @@ export default {
   },
   mounted() {
     console.log("mount")
-    let ws = new WebSocket("ws://120.76.175.224:9002");
-
+    const ipc = this.window.require('electron').ipcRenderer
+    this.wsClient = new WebSocket("ws://120.76.175.224:9002");
+    let ws = this.wsClient;
     switch (ws.readyState) {
       case WebSocket.CONNECTING:
         console.log("ws正在链接。。。")
         break;
       case WebSocket.OPEN:
         console.log("ws已链接")
-
-        setInterval(() => {
-          // console.log("app 心跳")
-          // 获取图片
-          let canvas = document.createElement('canvas');
-          let ctx = canvas.getContext('2d');
-          ctx.drawImage(this.thisVideo, 0, 0, 640, 480);
-          let imgData = canvas.toDataURL("image/png");
-          // 发送图片
-          ws.send(JSON.stringify({"model": "shape_color_2d", "image": imgData}))
-        }, 10000)
-
         break;
       case WebSocket.CLOSING:
         console.log("ws正在关闭。。。")
@@ -73,6 +65,9 @@ export default {
       console.log("接收到数据：" + data);
       let obj = JSON.parse(data);
       console.log("json data: " + obj);
+
+      ipc.send('showContent', 1);
+
     });
 
     this.openCamera();
@@ -80,7 +75,7 @@ export default {
   methods: {
     openCamera() {
       let _this = this;
-      _this.thisVideo = document.getElementById("video")
+      _this.camera = document.getElementById("video")
       let constraints = {
         audio: false,
         video: true
@@ -88,16 +83,54 @@ export default {
       navigator.mediaDevices
           .getUserMedia(constraints)
           .then(function(stream) {
-            _this.thisVideo.srcObject = stream;
-            _this.thisVideo.onloadedmetadata = function() {
-              _this.thisVideo.play();
+            _this.camera.srcObject = stream;
+            _this.camera.onloadedmetadata = function() {
+              _this.camera.play();
               console.log("open camera")
+              _this.startScan();
             };
           })
           .catch(err => {
             console.log(err);
           });
+
+      let width = _this.width;
+      _this.camera.addEventListener('canplay', () => {
+        if (!_this.streaming) {
+          let height = _this.camera.videoHeight / (_this.camera.videoWidth / width);
+          _this.height = height;
+
+          console.log(`camera width: ${_this.camera.videoWidth}， height: ${_this.camera.videoHeight}`)
+
+          let canvas = document.getElementById('canvas');
+          canvas.setAttribute('width', width.toString());
+          canvas.setAttribute('height', height.toString());
+          _this.streaming = true;
+        }
+      }, false)
     },
+    startScan() {
+      let ws = this.wsClient;
+      setInterval(() => {
+        // console.log("app 心跳")
+        // 获取图片
+        // let canvas = document.createElement('canvas');
+        let canvas = document.getElementById('canvas');
+        let { width, height } = this;
+        if (width && height) {
+          let ctx = canvas.getContext('2d');
+          canvas.width = width;
+          canvas.height = height;
+          let camera = this.camera;
+          console.log(`拍照: width: ${width} x ${height}`)
+          ctx.drawImage(camera, 0, 0, width, height);
+          let imgData = canvas.toDataURL("image/png");
+          // 发送图片
+          ws.send(JSON.stringify({"model": "shape_color_2d", "image": imgData}))
+        }
+
+      }, 5000)
+    }
   }
 }
 </script>
@@ -116,6 +149,10 @@ export default {
   height: 100px;
   left: 0;
   top: 0;
-  background: #42b983;
+}
+.canvas {
+  position: absolute;
+  left: 100px;
+  top: 0;
 }
 </style>

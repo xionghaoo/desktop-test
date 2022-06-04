@@ -7,11 +7,19 @@ require('@electron/remote/main').initialize()
 const ipc = require('electron').ipcMain
 const dialog = require('electron').dialog
 
+var windowList = [];
+
 ipc.on('show-message-dialog', function (e, msg) {
     dialog.showMessageBox({message: msg})
 })
 ipc.on('show-open-dialog', function () {
     dialog.showOpenDialog({properties: ['openFile', 'openDirectory', 'multiSelections']})
+})
+ipc.on('showContent', function (e, contentId) {
+    // 给渲染窗口发送消息
+    for (let i = 0; i < windowList.length; i++) {
+        windowList[i].webContents.postMessage('onContentChange', contentId, [])
+    }
 })
 
 const createMultiWindow = () => {
@@ -19,6 +27,7 @@ const createMultiWindow = () => {
     displays.find((display) => {
         console.log(`find display id: ${display.id}, ${display.bounds.width} x ${display.bounds.height}`)
     })
+    windowList = []
     for (let i = 0; i < displays.length; i++) {
         let display = displays[i];
 
@@ -37,6 +46,7 @@ const createMultiWindow = () => {
         })
         win.setFullScreen(true)
         win.loadFile('./dist/index.html')
+        windowList.push(win);
     }
 }
 
