@@ -64,9 +64,28 @@ export default {
       // 处理数据
       console.log("接收到数据：" + data);
       let obj = JSON.parse(data);
-      console.log("json data: " + obj);
+      let res = obj.result;
+      let hasRecognized = false;
+      if (res) {
+        for (let i = 0; i < res.length; i++) {
+          // 识别到三角形
+          if (res[i].shape === 'triangle') {
+            ipc.send('showContent', {
+              display: 0,
+              content: 1
+            });
+            hasRecognized = true;
+          }
+        }
+      }
 
-      ipc.send('showContent', 1);
+      // 停止播放
+      if (!hasRecognized) {
+        ipc.send('stopContent', {
+          display: 0,
+          content: 1
+        });
+      }
 
     });
 
@@ -101,7 +120,8 @@ export default {
           _this.height = height;
 
           console.log(`camera width: ${_this.camera.videoWidth}， height: ${_this.camera.videoHeight}`)
-
+          _this.camera.setAttribute('width', '100');
+          _this.camera.setAttribute('height', '100');
           let canvas = document.getElementById('canvas');
           canvas.setAttribute('width', width.toString());
           canvas.setAttribute('height', height.toString());
@@ -129,7 +149,7 @@ export default {
           ws.send(JSON.stringify({"model": "shape_color_2d", "image": imgData}))
         }
 
-      }, 5000)
+      }, 1000)
     }
   }
 }
@@ -153,6 +173,8 @@ export default {
 .canvas {
   position: absolute;
   left: 100px;
+  width: 640px;
+  height: 480px;
   top: 0;
 }
 </style>

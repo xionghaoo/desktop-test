@@ -15,10 +15,16 @@ ipc.on('show-message-dialog', function (e, msg) {
 ipc.on('show-open-dialog', function () {
     dialog.showOpenDialog({properties: ['openFile', 'openDirectory', 'multiSelections']})
 })
-ipc.on('showContent', function (e, contentId) {
+ipc.on('showContent', function (e, args) {
     // 给渲染窗口发送消息
     for (let i = 0; i < windowList.length; i++) {
-        windowList[i].webContents.postMessage('onContentChange', contentId, [])
+        windowList[i].webContents.postMessage('onShowContent', args, [])
+    }
+})
+ipc.on('stopContent', function (e, args) {
+    // 给渲染窗口发送消息
+    for (let i = 0; i < windowList.length; i++) {
+        windowList[i].webContents.postMessage('onStopContent', args, [])
     }
 })
 

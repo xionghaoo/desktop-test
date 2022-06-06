@@ -1,6 +1,6 @@
 <template>
   <div class="fullscreen">
-    <video width="100%" height="100%" autoplay loop>
+    <video id="screenA_video" width="100%" height="100%" loop>
       <source :src="video_url" type="video/mp4">
       Your browser does not support the video tag.
     </video>
@@ -22,9 +22,16 @@ export default {
     msg: String
   },
   mounted() {
+    let video = document.getElementById("screenA_video");
     const ipc = this.window.require('electron').ipcRenderer
-    ipc.on('onContentChange', (e, contentId) => {
-      console.log("this is page A onContentChange: " + contentId);
+    ipc.on('onShowContent', (e, args) => {
+      console.log("this is page A onContentChange: " + args);
+      video.play();
+    })
+
+    ipc.on('onStopContent', (e, args) => {
+      console.log("this is page A onStopChange: " + args);
+      video.pause();
     })
   },
   methods: {
