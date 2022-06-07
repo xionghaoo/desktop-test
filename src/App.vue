@@ -69,7 +69,6 @@ export default {
       _this.hasReceivedResponse = true
       let data = event.data;
       // 处理数据
-      // console.log("接收到数据：" + data);
       let obj = JSON.parse(data);
       _this.handleResult(obj);
     });
@@ -155,7 +154,7 @@ export default {
           }, 1000)
 
           setTimeout(() => {
-            console.log("请求颜色识别")
+            console.log("请求形状识别")
             // 形状和颜色识别
             if (_this.hasReceivedResponse) {
               _this.hasReceivedResponse = false;
@@ -168,7 +167,7 @@ export default {
       }, 3500);
     },
     handleResult(obj) {
-      console.log("处理结果")
+      console.log("接收到数据，处理结果")
       let model = obj.model;
       let res = obj.result;
       let hasAruco = false;
@@ -224,9 +223,9 @@ export default {
                 // this.currentType = 'education';
                 break;
             }
-            if (hasAruco) break;
           }
         }
+        if (hasAruco) return;
         if (model === 'chinese_ocr' && !hasAruco) {
           // 文字识别
           for (let i = 0; i < res.length; i++) {
@@ -276,9 +275,9 @@ export default {
                 // this.currentType = 'production';
                 break;
             }
-            if (hasText) break;
           }
         }
+        if (hasText) return;
         if (model === 'shape_color_2d' && (!hasText || !hasAruco)) {
           // 形状和颜色识别
           for (let i = 0; i < res.length; i++) {
@@ -328,9 +327,6 @@ export default {
                 // this.currentType = 'company';
                 break;
             }
-            if (hasShape) {
-              break;
-            }
           }
           if (!hasShape) {
             // this.stopContent(0)
@@ -346,13 +342,13 @@ export default {
         content: content
       });
     },
-    stopContent(content) {
-      const ipc = this.window.require('electron').ipcRenderer
-      ipc.send('stopContent', {
-        display: 0,
-        content: content
-      });
-    },
+    // stopContent(content) {
+    //   const ipc = this.window.require('electron').ipcRenderer
+    //   ipc.send('stopContent', {
+    //     display: 0,
+    //     content: content
+    //   });
+    // },
     downloadImage(data, filename) {
       let a = document.createElement('a');
       a.href = data;

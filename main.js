@@ -18,19 +18,23 @@ ipc.on('show-open-dialog', function () {
 })
 ipc.on('showContent', function (e, args) {
     let index = args.display;
-    if (windowList[index]) {
-        windowList[index].webContents.postMessage('onShowContent', args, [])
-    }
+    // if (windowList[index]) {
+    //     let winIndex = windowList[index].index;
+    //
+    //     windowList[index].webContents.postMessage('onShowContent', args, [])
+    // }
 
     if (currentType !== args.type) {
         // 给渲染窗口发送消息
         for (let i = 0; i < windowList.length; i++) {
-            if (index !== i) {
+            if (index !== windowList[i].index) {
                 windowList[i].webContents.postMessage('onShowContent', {
                     display: i,
                     type: args.type,
                     content: 2
                 }, [])
+            } else {
+                windowList[i].webContents.postMessage('onShowContent', args, []);
             }
         }
         currentType = args.type;
@@ -62,9 +66,9 @@ const createMultiWindow = () => {
         let x = display.bounds.x;
         let y = display.bounds.y;
 
-        let w = 1920;
-        let h = 1080
-        let threshold = 10;
+        let w = 1910;
+        let h = 1070
+        let threshold = 20;
         let start = -10;
         if (x >= start && x <= threshold && y >= start && y <= threshold) {
             // 第一块屏幕
