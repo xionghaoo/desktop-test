@@ -10,7 +10,7 @@
     <!--  摄像头调试  -->
     <video v-if="window.currentScreen === 0" id="video" class="camera" autoplay></video>
     <canvas v-if="window.currentScreen === 0" id="canvas" class="canvas"></canvas>
-    <button id="download" class="download">下载</button>
+    <button v-if="window.currentScreen === 0" id="download" class="download">下载</button>
   </div>
 </template>
 
@@ -31,7 +31,10 @@ export default {
       width: 320,
       height: 0,
       currentType: '',
-      hasReceivedResponse: true
+      hasReceivedResponse: true,
+      hasAruco: false,
+      hasText: false,
+      hasShape: false
     }
   },
   components: {
@@ -138,7 +141,9 @@ export default {
           let imgData = canvas.toDataURL("image/jpeg");
 
           console.log("请求Aruco码识别")
-
+          // this.hasAruco = false;
+          // this.hasText = false;
+          // this.hasShape = false;
           // ArUco识别
           if (_this.hasReceivedResponse) {
             _this.hasReceivedResponse = false;
@@ -161,124 +166,89 @@ export default {
               ws.send(JSON.stringify({"model": "shape_color_2d", "image": imgData}))
             }
           }, 2000)
-
         }
 
-      }, 3500);
+      }, 3000);
     },
     handleResult(obj) {
-      console.log("接收到数据，处理结果")
+      // let hasAruco = this.hasAruco;
+      // let hasText = this.hasText;
+      let hasShape = this.hasShape;
       let model = obj.model;
       let res = obj.result;
-      let hasAruco = false;
-      let hasText = false;
-      let hasShape = false;
       if (res) {
         if (model === 'aruco') {
+          console.log("接收到数据，处理aruco结果")
+
+          let success = false;
           // aruco码识别
           for (let i = 0; i < res.length; i++) {
             switch (res[i].num) {
               case 0:
                 console.log("识别到Aruco码：0");
                 this.playContent(0, "education",1);
-                hasAruco = true;
-                // if (this.currentType !== 'education') {
-                //   this.playContent(1, "education",2);
-                //   this.playContent(2, "education",2);
-                //   this.playContent(3, "education",2);
-                // }
-                // this.currentType = 'education';
+                // hasAruco = true;
+                success = true;
                 break;
               case 1:
                 console.log("识别到Aruco码：1");
                 this.playContent(1, "education",1);
-                hasAruco = true;
-                // if (this.currentType !== 'education') {
-                //   this.playContent(0, "education",2);
-                //   this.playContent(2, "education",2);
-                //   this.playContent(3, "education",2);
-                // }
-                // this.currentType = 'education';
+                // hasAruco = true;
+                success = true;
                 break;
               case 2:
                 console.log("识别到Aruco码：2")
                 this.playContent(2, "education",1)
-                hasAruco = true;
-                // if (this.currentType !== 'education') {
-                //   this.playContent(1, "education",2);
-                //   this.playContent(0, "education",2);
-                //   this.playContent(3, "education",2);
-                // }
-                // this.currentType = 'education';
+                // hasAruco = true;
+                success = true;
                 break;
               case 3:
                 console.log("识别到Aruco码：3")
                 this.playContent(3, "education",1)
-                hasAruco = true;
-                // if (this.currentType !== 'education') {
-                //   this.playContent(1, "education",2);
-                //   this.playContent(2, "education",2);
-                //   this.playContent(0, "education",2);
-                // }
-                // this.currentType = 'education';
+                // hasAruco = true;
+                success = true;
                 break;
             }
           }
+          this.hasAruco = success;
         }
-        if (hasAruco) return;
-        if (model === 'chinese_ocr' && !hasAruco) {
+        if (this.hasAruco) return;
+        if (model === 'chinese_ocr') {
+          console.log("接收到数据，处理文字结果")
+
+          let success = false;
           // 文字识别
           for (let i = 0; i < res.length; i++) {
             switch (res[i].txt) {
               case 'A':
                 console.log("识别到文字： A");
                 this.playContent(0, "production",1);
-                hasText = true;
-                // if (this.currentType !== 'production') {
-                //   this.playContent(1, "production",2);
-                //   this.playContent(2, "production",2);
-                //   this.playContent(3, "production",2);
-                // }
-                // this.currentType = 'production';
+                success = true;
                 break;
               case 'B':
                 console.log("识别到文字： B");
                 this.playContent(1, "production",1);
-                hasText = true;
-                // if (this.currentType !== 'production') {
-                //   this.playContent(0, "production",2);
-                //   this.playContent(2, "production",2);
-                //   this.playContent(3, "production",2);
-                // }
-                // this.currentType = 'production';
+                success = true;
                 break;
               case 'C':
                 console.log("识别到文字： C");
                 this.playContent(2, "production",1);
-                hasText = true;
-                // if (this.currentType !== 'production') {
-                //   this.playContent(1, "production",2);
-                //   this.playContent(0, "production",2);
-                //   this.playContent(3, "production",2);
-                // }
-                // this.currentType = 'production';
+                success = true;
                 break;
               case 'D':
                 console.log("识别到文字： D");
                 this.playContent(3, "production",1);
-                hasText = true;
-                // if (this.currentType !== 'production') {
-                //   this.playContent(1, "production",2);
-                //   this.playContent(2, "production",2);
-                //   this.playContent(0, "production",2);
-                // }
-                // this.currentType = 'production';
+                success = true;
                 break;
             }
           }
+          this.hasText = success;
         }
-        if (hasText) return;
-        if (model === 'shape_color_2d' && (!hasText || !hasAruco)) {
+        if ( this.hasText || this.hasAruco) return;
+        if (model === 'shape_color_2d') {
+          console.log("接收到数据，处理形状结果")
+
+          this.hasShape = false;
           // 形状和颜色识别
           for (let i = 0; i < res.length; i++) {
             switch (res[i].shape) {

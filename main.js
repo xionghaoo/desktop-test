@@ -18,33 +18,22 @@ ipc.on('show-open-dialog', function () {
 })
 ipc.on('showContent', function (e, args) {
     let index = args.display;
-    // if (windowList[index]) {
-    //     let winIndex = windowList[index].index;
-    //
-    //     windowList[index].webContents.postMessage('onShowContent', args, [])
-    // }
-
+    if (windowList[index]) {
+        windowList[index].webContents.postMessage('onShowContent', args, [])
+    }
     if (currentType !== args.type) {
         // 给渲染窗口发送消息
         for (let i = 0; i < windowList.length; i++) {
-            if (index !== windowList[i].index) {
+            if (index !== i) {
                 windowList[i].webContents.postMessage('onShowContent', {
                     display: i,
                     type: args.type,
                     content: 2
                 }, [])
-            } else {
-                windowList[i].webContents.postMessage('onShowContent', args, []);
             }
         }
         currentType = args.type;
     }
-
-
-    // switch (display) {
-    // case 0:
-    //     break;
-    // }
 })
 ipc.on('stopContent', function (e, args) {
     // 给渲染窗口发送消息
@@ -102,8 +91,11 @@ const createMultiWindow = () => {
                 index: 3
             });
         }
-
     }
+
+    screenIndexes.sort((a, b) => {
+        return a.index - b.index;
+    })
 
     for (let i = 0; i < screenIndexes.length; i++) {
         let screen = screenIndexes[i];
@@ -118,7 +110,7 @@ const createMultiWindow = () => {
             webPreferences: {
                 nodeIntegration: true,
                 contextIsolation: false,
-                preload: path.join(__dirname, `preload${screen.index}.js`)
+                preload: path.join(__dirname, `preload${i}.js`)
             }
         })
         win.setFullScreen(true)
