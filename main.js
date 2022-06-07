@@ -7,7 +7,8 @@ require('@electron/remote/main').initialize()
 const ipc = require('electron').ipcMain
 const dialog = require('electron').dialog
 
-var windowList = [];
+let windowList = [];
+let currentType = '';
 
 ipc.on('show-message-dialog', function (e, msg) {
     dialog.showMessageBox({message: msg})
@@ -16,15 +17,25 @@ ipc.on('show-open-dialog', function () {
     dialog.showOpenDialog({properties: ['openFile', 'openDirectory', 'multiSelections']})
 })
 ipc.on('showContent', function (e, args) {
-    let i = args.display;
-    if (windowList[i]) {
-        windowList[i].webContents.postMessage('onShowContent', args, [])
+    let index = args.display;
+    if (windowList[index]) {
+        windowList[index].webContents.postMessage('onShowContent', args, [])
     }
 
-    // 给渲染窗口发送消息
-    // for (let i = 0; i < windowList.length; i++) {
-    //     windowList[i].webContents.postMessage('onShowContent', args, [])
-    // }
+    if (currentType !== args.type) {
+        // 给渲染窗口发送消息
+        for (let i = 0; i < windowList.length; i++) {
+            if (index !== i) {
+                windowList[i].webContents.postMessage('onShowContent', {
+                    display: i,
+                    type: args.type,
+                    content: 2
+                }, [])
+            }
+        }
+        currentType = args.type;
+    }
+
 
     // switch (display) {
     // case 0:

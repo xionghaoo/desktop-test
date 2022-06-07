@@ -43,11 +43,9 @@ export default {
     msg: String
   },
   mounted() {
-    // let video = document.getElementById("screenA_video");
     const ipc = this.window.require('electron').ipcRenderer
     ipc.on('onShowContent', (e, args) => {
       console.log(`this is page A onContentChange: ${args.display}, ${args.content}, ${args.type}`);
-
       switch (args.type) {
         case 'production':
           this.content_url = this.img_production_content_1
@@ -63,7 +61,6 @@ export default {
           break;
       }
       this.content = args.content;
-      // video.play();
     })
 
     ipc.on('onStopContent', (e, args) => {

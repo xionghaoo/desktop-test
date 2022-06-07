@@ -69,7 +69,7 @@ export default {
       _this.hasReceivedResponse = true
       let data = event.data;
       // 处理数据
-      console.log("接收到数据：" + data);
+      // console.log("接收到数据：" + data);
       let obj = JSON.parse(data);
       _this.handleResult(obj);
     });
@@ -165,7 +165,7 @@ export default {
 
         }
 
-      }, 3000);
+      }, 3500);
     },
     handleResult(obj) {
       console.log("处理结果")
@@ -183,47 +183,48 @@ export default {
                 console.log("识别到Aruco码：0");
                 this.playContent(0, "education",1);
                 hasAruco = true;
-                if (this.currentType !== 'education') {
-                  this.playContent(1, "education",2);
-                  this.playContent(2, "education",2);
-                  this.playContent(3, "education",2);
-                }
-                this.currentType = 'education';
+                // if (this.currentType !== 'education') {
+                //   this.playContent(1, "education",2);
+                //   this.playContent(2, "education",2);
+                //   this.playContent(3, "education",2);
+                // }
+                // this.currentType = 'education';
                 break;
               case 1:
                 console.log("识别到Aruco码：1");
                 this.playContent(1, "education",1);
                 hasAruco = true;
-                if (this.currentType !== 'education') {
-                  this.playContent(0, "education",2);
-                  this.playContent(2, "education",2);
-                  this.playContent(3, "education",2);
-                }
-                this.currentType = 'education';
+                // if (this.currentType !== 'education') {
+                //   this.playContent(0, "education",2);
+                //   this.playContent(2, "education",2);
+                //   this.playContent(3, "education",2);
+                // }
+                // this.currentType = 'education';
                 break;
               case 2:
                 console.log("识别到Aruco码：2")
                 this.playContent(2, "education",1)
                 hasAruco = true;
-                if (this.currentType !== 'education') {
-                  this.playContent(1, "education",2);
-                  this.playContent(0, "education",2);
-                  this.playContent(3, "education",2);
-                }
-                this.currentType = 'education';
+                // if (this.currentType !== 'education') {
+                //   this.playContent(1, "education",2);
+                //   this.playContent(0, "education",2);
+                //   this.playContent(3, "education",2);
+                // }
+                // this.currentType = 'education';
                 break;
               case 3:
                 console.log("识别到Aruco码：3")
                 this.playContent(3, "education",1)
                 hasAruco = true;
-                if (this.currentType !== 'education') {
-                  this.playContent(1, "education",2);
-                  this.playContent(2, "education",2);
-                  this.playContent(0, "education",2);
-                }
-                this.currentType = 'education';
+                // if (this.currentType !== 'education') {
+                //   this.playContent(1, "education",2);
+                //   this.playContent(2, "education",2);
+                //   this.playContent(0, "education",2);
+                // }
+                // this.currentType = 'education';
                 break;
             }
+            if (hasAruco) break;
           }
         }
         if (model === 'chinese_ocr' && !hasAruco) {
@@ -234,50 +235,51 @@ export default {
                 console.log("识别到文字： A");
                 this.playContent(0, "production",1);
                 hasText = true;
-                if (this.currentType !== 'production') {
-                  this.playContent(1, "production",2);
-                  this.playContent(2, "production",2);
-                  this.playContent(3, "production",2);
-                }
-                this.currentType = 'production';
+                // if (this.currentType !== 'production') {
+                //   this.playContent(1, "production",2);
+                //   this.playContent(2, "production",2);
+                //   this.playContent(3, "production",2);
+                // }
+                // this.currentType = 'production';
                 break;
               case 'B':
                 console.log("识别到文字： B");
                 this.playContent(1, "production",1);
                 hasText = true;
-                if (this.currentType !== 'production') {
-                  this.playContent(0, "production",2);
-                  this.playContent(2, "production",2);
-                  this.playContent(3, "production",2);
-                }
-                this.currentType = 'production';
+                // if (this.currentType !== 'production') {
+                //   this.playContent(0, "production",2);
+                //   this.playContent(2, "production",2);
+                //   this.playContent(3, "production",2);
+                // }
+                // this.currentType = 'production';
                 break;
               case 'C':
                 console.log("识别到文字： C");
                 this.playContent(2, "production",1);
                 hasText = true;
-                if (this.currentType !== 'production') {
-                  this.playContent(1, "production",2);
-                  this.playContent(0, "production",2);
-                  this.playContent(3, "production",2);
-                }
-                this.currentType = 'production';
+                // if (this.currentType !== 'production') {
+                //   this.playContent(1, "production",2);
+                //   this.playContent(0, "production",2);
+                //   this.playContent(3, "production",2);
+                // }
+                // this.currentType = 'production';
                 break;
               case 'D':
                 console.log("识别到文字： D");
                 this.playContent(3, "production",1);
                 hasText = true;
-                if (this.currentType !== 'production') {
-                  this.playContent(1, "production",2);
-                  this.playContent(2, "production",2);
-                  this.playContent(0, "production",2);
-                }
-                this.currentType = 'production';
+                // if (this.currentType !== 'production') {
+                //   this.playContent(1, "production",2);
+                //   this.playContent(2, "production",2);
+                //   this.playContent(0, "production",2);
+                // }
+                // this.currentType = 'production';
                 break;
             }
+            if (hasText) break;
           }
         }
-        if (model === 'shape_color_2d' && !hasText && !hasAruco) {
+        if (model === 'shape_color_2d' && (!hasText || !hasAruco)) {
           // 形状和颜色识别
           for (let i = 0; i < res.length; i++) {
             switch (res[i].shape) {
@@ -285,46 +287,49 @@ export default {
                 console.log("识别到圆形");
                 this.playContent(0, "company",1);
                 hasShape = true;
-                if (this.currentType !== 'company') {
-                  this.playContent(1, "company",2);
-                  this.playContent(2, "company",2);
-                  this.playContent(3, "company",2);
-                }
-                this.currentType = 'company';
+                // if (this.currentType !== 'company') {
+                //   this.playContent(1, "company",2);
+                //   this.playContent(2, "company",2);
+                //   this.playContent(3, "company",2);
+                // }
+                // this.currentType = 'company';
                 break;
               case 'square':
                 console.log("识别到正方形");
                 this.playContent(1, "company",1);
                 hasShape = true;
-                if (this.currentType !== 'company') {
-                  this.playContent(0, "company",2);
-                  this.playContent(2, "company",2);
-                  this.playContent(3, "company",2);
-                }
-                this.currentType = 'company';
+                // if (this.currentType !== 'company') {
+                //   this.playContent(0, "company",2);
+                //   this.playContent(2, "company",2);
+                //   this.playContent(3, "company",2);
+                // }
+                // this.currentType = 'company';
                 break;
               case 'triangle':
                 console.log("识别到三角形");
                 this.playContent(2, "company",1);
                 hasShape = true;
-                if (this.currentType !== 'company') {
-                  this.playContent(1, "company",2);
-                  this.playContent(0, "company",2);
-                  this.playContent(3, "company",2);
-                }
-                this.currentType = 'company';
+                // if (this.currentType !== 'company') {
+                //   this.playContent(1, "company",2);
+                //   this.playContent(0, "company",2);
+                //   this.playContent(3, "company",2);
+                // }
+                // this.currentType = 'company';
                 break;
               case 'pentagon':
                 console.log("识别到五边形");
                 this.playContent(3, "company",1);
                 hasShape = true;
-                if (this.currentType !== 'company') {
-                  this.playContent(1, "company",2);
-                  this.playContent(2, "company",2);
-                  this.playContent(0, "company",2);
-                }
-                this.currentType = 'company';
+                // if (this.currentType !== 'company') {
+                //   this.playContent(1, "company",2);
+                //   this.playContent(2, "company",2);
+                //   this.playContent(0, "company",2);
+                // }
+                // this.currentType = 'company';
                 break;
+            }
+            if (hasShape) {
+              break;
             }
           }
           if (!hasShape) {

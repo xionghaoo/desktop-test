@@ -40,7 +40,6 @@ export default {
     const ipc = this.window.require('electron').ipcRenderer
     ipc.on('onShowContent', (e, args) => {
       console.log(`this is page B onContentChange: ${args.display}, ${args.content}, ${args.type}`);
-
       switch (args.type) {
         case 'production':
           this.content_url = this.img_production_content_2
