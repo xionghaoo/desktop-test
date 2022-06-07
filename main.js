@@ -16,10 +16,18 @@ ipc.on('show-open-dialog', function () {
     dialog.showOpenDialog({properties: ['openFile', 'openDirectory', 'multiSelections']})
 })
 ipc.on('showContent', function (e, args) {
+    let i = args.display;
+    windowList[i].webContents.postMessage('onShowContent', args, [])
+
     // 给渲染窗口发送消息
-    for (let i = 0; i < windowList.length; i++) {
-        windowList[i].webContents.postMessage('onShowContent', args, [])
-    }
+    // for (let i = 0; i < windowList.length; i++) {
+    //     windowList[i].webContents.postMessage('onShowContent', args, [])
+    // }
+
+    // switch (display) {
+    // case 0:
+    //     break;
+    // }
 })
 ipc.on('stopContent', function (e, args) {
     // 给渲染窗口发送消息
@@ -34,20 +42,66 @@ const createMultiWindow = () => {
         console.log(`find display id: ${display.id}, ${display.bounds.width} x ${display.bounds.height}`)
     })
     windowList = []
+    let screenIndexes = [];
     for (let i = 0; i < displays.length; i++) {
         let display = displays[i];
+
+        let x = display.bounds.x;
+        let y = display.bounds.y;
+
+        let w = 1920;
+        let h = 1080
+        let threshold = 10;
+        let start = -10;
+        if (x >= start && x <= threshold && y >= start && y <= threshold) {
+            // 第一块屏幕
+            screenIndexes.push({
+                x: x,
+                y: y,
+                index: 0
+            });
+        }
+        if (x >= w && x <= w + threshold && y >= start && y <= threshold) {
+            // 第二块屏幕
+            screenIndexes.push({
+                x: x,
+                y: y,
+                index: 1
+            });
+        }
+        if (x >= start && x <= threshold && y >= h && y <= h + threshold) {
+            // 第三块屏幕
+            screenIndexes.push({
+                x: x,
+                y: y,
+                index: 2
+            });
+        }
+        if (x >= w && x <= w + threshold && y >= h && y <= h + threshold) {
+            // 第四块屏幕
+            screenIndexes.push({
+                x: x,
+                y: y,
+                index: 3
+            });
+        }
+
+    }
+
+    for (let i = 0; i < screenIndexes.length; i++) {
+        let screen = screenIndexes[i];
 
         const win = new BrowserWindow({
             width: 800,
             height: 600,
-            x: display.bounds.x,
-            y: display.bounds.y,
+            x: screen.x,
+            y: screen.y,
             frame: false,
             titleBarStyle: 'hidden',
             webPreferences: {
                 nodeIntegration: true,
                 contextIsolation: false,
-                preload: path.join(__dirname, `preload${i}.js`)
+                preload: path.join(__dirname, `preload${screen.index}.js`)
             }
         })
         win.setFullScreen(true)

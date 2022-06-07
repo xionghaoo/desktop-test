@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "main": "main.js",
+  "authors": "xionghao",
+  "description": "demo",
   "scripts": {
     "start": "vue-cli-service build && electron-forge start",
     "serve": "vue-cli-service serve",
