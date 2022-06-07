@@ -17,7 +17,9 @@ ipc.on('show-open-dialog', function () {
 })
 ipc.on('showContent', function (e, args) {
     let i = args.display;
-    windowList[i].webContents.postMessage('onShowContent', args, [])
+    if (windowList[i]) {
+        windowList[i].webContents.postMessage('onShowContent', args, [])
+    }
 
     // 给渲染窗口发送消息
     // for (let i = 0; i < windowList.length; i++) {
