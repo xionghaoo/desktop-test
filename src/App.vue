@@ -9,8 +9,8 @@
     </div>
     <!--  摄像头调试  -->
     <video v-if="window.currentScreen === 0" id="video" class="camera" autoplay></video>
-    <canvas v-if="window.currentScreen === 0" id="canvas" class="canvas"></canvas>
-    <button v-if="window.currentScreen === 0" id="download" class="download">下载</button>
+<!--    <canvas v-if="window.currentScreen === 0" id="canvas" class="canvas"></canvas>-->
+<!--    <button v-if="window.currentScreen === 0" id="download" class="download">下载</button>-->
   </div>
 </template>
 
@@ -78,11 +78,11 @@ export default {
 
     this.openCamera();
 
-    document.getElementById("download").addEventListener('click', () => {
-      let canvas = document.getElementById('canvas');
-      let imgData = canvas.toDataURL("image/jpeg");
-      this.downloadImage(imgData, "my-canvas.jpg");
-    });
+    // document.getElementById("download").addEventListener('click', () => {
+    //   let canvas = document.getElementById('canvas');
+    //   let imgData = canvas.toDataURL("image/jpeg");
+    //   this.downloadImage(imgData, "my-canvas.jpg");
+    // });
   },
   methods: {
     openCamera() {
@@ -129,7 +129,7 @@ export default {
         // console.log("app 心跳")
         // 获取图片
         // let canvas = document.createElement('canvas');
-        let canvas = document.getElementById('canvas');
+        let canvas = document.createElement('canvas');
         let { width, height } = this;
         if (width && height) {
           let ctx = canvas.getContext('2d');

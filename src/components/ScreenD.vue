@@ -42,31 +42,33 @@ export default {
     ipc.on('onShowContent', (e, args) => {
       console.log(`this is page D onContentChange: ${args.display}, ${args.content}, ${args.type}`);
 
-      switch (args.type) {
-        case 'production':
-          this.content_url = this.img_production_content_4
-          this.default_content_url = this.img_production_default_4
-          break;
-        case 'company':
-          this.content_url = this.img_company_content_4
-          this.default_content_url = this.img_company_default_4
-          break;
-        case 'education':
-          this.content_url = this.img_education_content_4
-          this.default_content_url = this.img_education_default_4
-          break;
-      }
-      this.type = args.type;
-      this.content = args.content;
+      if (this.type !== args.type || this.content !== args.content) {
+        switch (args.type) {
+          case 'production':
+            this.content_url = this.img_production_content_4
+            this.default_content_url = this.img_production_default_4
+            break;
+          case 'company':
+            this.content_url = this.img_company_content_4
+            this.default_content_url = this.img_company_default_4
+            break;
+          case 'education':
+            this.content_url = this.img_education_content_4
+            this.default_content_url = this.img_education_default_4
+            break;
+        }
+        this.type = args.type;
+        this.content = args.content;
 
-      let video = document.getElementById("screenD_video");
-      console.log("play mp4: " + this.content_url)
-      let source = document.createElement('source');
-      video.pause();
-      source.setAttribute('src', this.content_url);
-      source.setAttribute('type', 'video/mp4');
-      video.load();
-      video.play();
+        let video = document.getElementById("screenD_video");
+        console.log("play mp4: " + this.content_url)
+        let source = document.createElement('source');
+        video.pause();
+        source.setAttribute('src', this.content_url);
+        source.setAttribute('type', 'video/mp4');
+        video.load();
+        video.play();
+      }
     })
   }
 }
